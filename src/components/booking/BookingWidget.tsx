@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useBookingStore } from '@/lib/booking-store';
 import { BookingFormData, AvailableSlot } from '@/lib/types';
 import { 
@@ -267,147 +268,282 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
 
   return (
-    <div className="bg-background flex flex-col w-full h-screen fixed inset-0 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Sparkles className="h-8 w-8" />
+    <div className="bg-background flex flex-col w-full min-h-screen overflow-hidden safe-area-inset">
+      {/* Header - Improved Mobile */}
+      <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground p-4 md:p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shrink-0">
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
+            </div>
             <div>
-              <h1 className="text-2xl font-display font-bold">SparkClean</h1>
-              <p className="text-primary-foreground/80 text-sm">Professional Cleaning Services</p>
+              <h1 className="text-xl sm:text-2xl font-display font-bold">SparkClean</h1>
+              <p className="text-primary-foreground/90 text-xs sm:text-sm">Professional Cleaning Services</p>
             </div>
           </div>
           {step !== 'success' && (
-            <div className="text-right">
-              <span className="text-xs text-primary-foreground/70">Estimated</span>
-              <p className="text-2xl font-bold">£{totalPrice}</p>
+            <div className="text-left sm:text-right bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 sm:px-4 w-full sm:w-auto">
+              <span className="text-xs text-primary-foreground/80 block">Estimated Total</span>
+              <p className="text-2xl sm:text-3xl font-bold">£{totalPrice}</p>
             </div>
           )}
         </div>
         
-        {/* Progress Indicator */}
+        {/* Progress Indicator - Mobile Optimized */}
         {step !== 'success' && (
-          <div className="flex items-center gap-1 mt-6">
-            {['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].map((s, i) => (
-              <div key={s} className="flex items-center flex-1">
-                <div className={cn(
-                  "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all shrink-0",
-                  step === s || ['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].indexOf(step) > i
-                    ? "bg-white text-primary"
-                    : "bg-primary-foreground/20 text-primary-foreground/60"
-                )}>
-                  {['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].indexOf(step) > i ? (
-                    <CheckCircle2 className="h-4 w-4" />
-                  ) : (
-                    i + 1
-                  )}
-                </div>
-                {i < 4 && (
-                  <div className={cn(
-                    "flex-1 h-0.5 mx-1",
-                    ['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].indexOf(step) > i
-                      ? "bg-white"
-                      : "bg-primary-foreground/20"
-                  )} />
-                )}
-              </div>
-            ))}
+          <div className="max-w-4xl mx-auto mt-4 sm:mt-6 px-2">
+            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].map((s, i) => {
+                const stepNames = ['Location', 'Property', 'Contact', 'Payment', 'Review'];
+                const isActive = step === s;
+                const isCompleted = ['location-datetime', 'property-details', 'contact', 'payment', 'confirm'].indexOf(step) > i;
+                
+                return (
+                  <div key={s} className="flex items-center flex-1 min-w-0">
+                    <div className="flex flex-col items-center flex-1 min-w-0">
+                      <div className={cn(
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all shrink-0 mb-2",
+                        isActive || isCompleted
+                          ? "bg-white text-primary shadow-lg scale-110"
+                          : "bg-white/20 text-primary-foreground/60"
+                      )}>
+                        {isCompleted ? (
+                          <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          i + 1
+                        )}
+                      </div>
+                      <span className={cn(
+                        "text-xs font-medium hidden sm:block text-center truncate w-full",
+                        isActive || isCompleted ? "text-white" : "text-primary-foreground/70"
+                      )}>
+                        {stepNames[i]}
+                      </span>
+                    </div>
+                    {i < 4 && (
+                      <div className={cn(
+                        "flex-1 h-1 mx-1 sm:mx-2 rounded-full transition-all min-w-[8px]",
+                        isCompleted ? "bg-white" : "bg-white/20"
+                      )} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="overflow-y-auto flex-1 p-6">
+      {/* Content - Mobile optimized spacing */}
+      <div className="overflow-y-auto flex-1 p-4 sm:p-6 md:p-8">
         {/* Step: Location, Date & Time */}
         {step === 'location-datetime' && (
-          <div className="space-y-4 animate-fade-in">
-            <h2 className="text-xl font-semibold mb-4">Location & Schedule</h2>
+          <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">Location & Schedule</h2>
+              <p className="text-sm sm:text-base text-muted-foreground">Tell us where to come and when</p>
+            </div>
             
-            {/* UK Postcode and City */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="postcode" className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> UK Postcode
-                </Label>
-                <Input
-                  id="postcode"
-                  placeholder="SW1A 1AA"
-                  value={formData.postcode}
-                  onChange={e => setFormData(prev => ({ ...prev, postcode: e.target.value.toUpperCase() }))}
-                  className="uppercase"
-                  maxLength={8}
-                />
+            {/* Location Section - Card Style */}
+            <div className="bg-gradient-to-br from-accent/50 to-background rounded-2xl p-4 sm:p-6 border-2 border-primary/10 shadow-sm">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shrink-0">
+                  <MapPin className="h-5 w-5 sm:h-6 sm:w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base sm:text-lg">Your Location</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Where should we send the cleaner?</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="city" className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> City
-                </Label>
-                <Input
-                  id="city"
-                  placeholder="London"
-                  value={formData.city}
-                  onChange={e => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="postcode" className="text-sm font-medium">
+                    UK Postcode
+                  </Label>
+                  <Input
+                    id="postcode"
+                    placeholder="SW1A 1AA"
+                    value={formData.postcode}
+                    onChange={e => setFormData(prev => ({ ...prev, postcode: e.target.value.toUpperCase() }))}
+                    className="uppercase h-12 sm:h-14 text-base border-2 focus:border-primary"
+                    maxLength={8}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-sm font-medium">
+                    City
+                  </Label>
+                  <Input
+                    id="city"
+                    placeholder="London"
+                    value={formData.city}
+                    onChange={e => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                    className="h-12 sm:h-14 text-base border-2 focus:border-primary"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Date & Time Selection */}
-            <div className="grid md:grid-cols-2 gap-4 mt-6">
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  <CalendarIcon className="h-4 w-4 inline mr-1" />
-                  Select Date
-                </Label>
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-background px-4 text-muted-foreground">Then select date & time</span>
+              </div>
+            </div>
+
+            {/* Date & Time Selection - Side by Side Cards */}
+            <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+              {/* Date Selection Card - Improved */}
+              <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                      <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <h3 className="font-semibold text-base sm:text-lg">Select Date</h3>
+                  </div>
+                  {formData.date && (
+                    <div className="flex items-center gap-2 text-xs sm:text-sm">
+                      <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-success shrink-0" />
+                      <span className="text-muted-foreground hidden sm:inline">Selected</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Calendar - Full width with responsive days */}
                 <Calendar
                   mode="single"
                   selected={formData.date}
                   onSelect={handleDateSelect}
                   disabled={(date) => isBefore(date, startOfToday())}
+                  className="w-full rounded-xl border-2 border-primary/10 bg-background p-2 sm:p-4 shadow-sm"
+                  classNames={{
+                    months: "w-full flex flex-col",
+                    month: "space-y-2 sm:space-y-4 w-full max-w-none",
+                    table: "w-full",
+                    head_row: "flex w-full",
+                    head_cell: "text-muted-foreground rounded-md flex-1 h-8 sm:h-9 font-normal text-xs flex items-center justify-center",
+                    row: "flex w-full mt-1 sm:mt-2.5",
+                    cell: "h-10 sm:h-12 flex-1 text-center text-xs sm:text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                    day: "h-10 sm:h-12 w-full p-0 font-normal text-xs sm:text-sm aria-selected:opacity-100 min-h-[44px]",
+                    day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-bold",
+                    day_today: "bg-accent text-accent-foreground font-semibold"
+                  }}
                 />
+                
+                {/* Quick date shortcuts */}
+                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDateSelect(new Date())}
+                    className="text-xs min-h-[44px] px-3"
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      handleDateSelect(tomorrow);
+                    }}
+                    className="text-xs min-h-[44px] px-3"
+                  >
+                    Tomorrow
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const nextWeek = new Date();
+                      nextWeek.setDate(nextWeek.getDate() + 7);
+                      handleDateSelect(nextWeek);
+                    }}
+                    className="text-xs min-h-[44px] px-3"
+                  >
+                    Next Week
+                  </Button>
+                </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  <Clock className="h-4 w-4 inline mr-1" />
-                  Available Times
-                </Label>
+              {/* Time Selection Card - Enhanced */}
+              <div className="bg-card rounded-2xl p-4 sm:p-6 border-2 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-between mb-4 gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                      <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-base sm:text-lg">Available Times</h3>
+                      {formData.date && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {format(formData.date, 'EEEE, MMMM d, yyyy')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {formData.time && (
+                    <div className="flex items-center gap-2 bg-success/10 text-success px-2 sm:px-3 py-1 rounded-full shrink-0">
+                      <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="text-xs font-medium hidden sm:inline">Selected</span>
+                    </div>
+                  )}
+                </div>
                 {formData.date ? (
                   Object.keys(groupedSlots).length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+                    <div className="space-y-2 max-h-[300px] sm:max-h-[400px] overflow-y-auto pr-2">
                       {Object.entries(groupedSlots).map(([time, slots]) => (
                         <Button
                           key={time}
                           variant={formData.time === time ? 'default' : 'outline'}
-                          size="sm"
-                          className="h-auto py-2 flex flex-col"
+                          className={cn(
+                            "w-full h-14 sm:h-16 justify-between text-left transition-all min-h-[56px]",
+                            formData.time === time && "ring-2 ring-primary ring-offset-2 shadow-lg"
+                          )}
                           onClick={() => handleTimeSelect(time, slots[0].staffId)}
                         >
-                          <span className="font-semibold">{time}</span>
-                          <span className="text-xs opacity-70">{slots[0].staffName}</span>
+                          <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
+                            <span className="font-bold text-base sm:text-lg">{time}</span>
+                            <span className="text-xs text-muted-foreground truncate w-full">{slots[0].staffName}</span>
+                          </div>
+                          {formData.time === time && (
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                          )}
                         </Button>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center text-muted-foreground py-8 border rounded-lg">
-                      No available slots for this date
+                    <div className="text-center py-8 sm:py-12">
+                      <Clock className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
+                      <p className="font-medium text-base sm:text-lg mb-1">No slots available</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Try selecting a different date</p>
                     </div>
                   )
                 ) : (
-                  <div className="text-center text-muted-foreground py-8 border rounded-lg">
-                    Please select a date first
+                  <div className="text-center py-8 sm:py-12">
+                    <CalendarIcon className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
+                    <p className="font-medium text-base sm:text-lg mb-1">Select a date first</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Choose from the calendar</p>
                   </div>
                 )}
               </div>
             </div>
 
+            {/* Continue Button */}
             <Button
               variant="hero"
-              className="w-full mt-6"
+              size="lg"
+              className="w-full mt-4 sm:mt-6 min-h-[56px]"
               disabled={!canProceedFromLocation}
               onClick={() => setStep('property-details')}
             >
-              Continue
+              Continue to Property Details
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -415,22 +551,22 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
         {/* Step: Property Details & Extras */}
         {step === 'property-details' && (
-          <div className="space-y-4 animate-fade-in">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto">
             <div className="flex items-center gap-2">
-              <button onClick={goBack} className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <button onClick={goBack} className="p-2 sm:p-3 hover:bg-muted rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <ArrowLeft className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-semibold">Property Details & Services</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">Property Details & Services</h2>
             </div>
 
             {/* Property Type Selection */}
             <div className="space-y-2">
-              <Label>Property Type</Label>
-              <div className="grid grid-cols-2 gap-3">
+              <Label className="text-sm sm:text-base">Property Type</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={() => handlePropertyTypeSelect('apartment')}
                   className={cn(
-                    "p-4 rounded-xl border-2 transition-all text-left",
+                    "p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                     formData.propertyType === 'apartment'
                       ? "border-primary bg-primary/5"
                       : "border-muted hover:border-primary/50"
@@ -438,13 +574,13 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "h-10 w-10 rounded-lg flex items-center justify-center",
+                      "h-10 w-10 rounded-lg flex items-center justify-center shrink-0",
                       formData.propertyType === 'apartment' ? "bg-primary text-primary-foreground" : "bg-muted"
                     )}>
                       <Home className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="font-semibold">Apartment</p>
+                      <p className="font-semibold text-sm sm:text-base">Apartment</p>
                       <p className="text-xs text-muted-foreground">Flat or unit</p>
                     </div>
                   </div>
@@ -452,7 +588,7 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 <button
                   onClick={() => handlePropertyTypeSelect('house')}
                   className={cn(
-                    "p-4 rounded-xl border-2 transition-all text-left",
+                    "p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                     formData.propertyType === 'house'
                       ? "border-primary bg-primary/5"
                       : "border-muted hover:border-primary/50"
@@ -460,13 +596,13 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "h-10 w-10 rounded-lg flex items-center justify-center",
+                      "h-10 w-10 rounded-lg flex items-center justify-center shrink-0",
                       formData.propertyType === 'house' ? "bg-primary text-primary-foreground" : "bg-muted"
                     )}>
                       <Home className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="font-semibold">House</p>
+                      <p className="font-semibold text-sm sm:text-base">House</p>
                       <p className="text-xs text-muted-foreground">Detached or semi-detached</p>
                     </div>
                   </div>
@@ -477,24 +613,24 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
             {/* Bedrooms and Bathrooms */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-sm sm:text-base">
                   <Bed className="h-4 w-4" /> Bedrooms
                 </Label>
                 <div className="flex items-center justify-between p-4 rounded-xl border-2">
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                     onClick={() => handleBedroomsChange(-1)}
                     disabled={formData.bedrooms <= 1}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="text-2xl font-bold">{formData.bedrooms}</span>
+                  <span className="text-xl sm:text-2xl font-bold">{formData.bedrooms}</span>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                     onClick={() => handleBedroomsChange(1)}
                   >
                     <Plus className="h-4 w-4" />
@@ -503,24 +639,24 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-sm sm:text-base">
                   <Bath className="h-4 w-4" /> Bathrooms
                 </Label>
                 <div className="flex items-center justify-between p-4 rounded-xl border-2">
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                     onClick={() => handleBathroomsChange(-1)}
                     disabled={formData.bathrooms <= 1}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="text-2xl font-bold">{formData.bathrooms}</span>
+                  <span className="text-xl sm:text-2xl font-bold">{formData.bathrooms}</span>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full"
+                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                     onClick={() => handleBathroomsChange(1)}
                   >
                     <Plus className="h-4 w-4" />
@@ -531,33 +667,33 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
             {/* Carpet & Balcony Extras */}
             <div className="space-y-4">
-              <Label className="text-base font-semibold">Additional Services</Label>
+              <Label className="text-sm sm:text-base font-semibold">Additional Services</Label>
               
               {/* Carpet Cleaning */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-sm sm:text-base">
                   <Sofa className="h-4 w-4" /> Carpet Cleaning (Extra)
                 </Label>
-                <div className="flex items-center justify-between p-4 rounded-xl border-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border-2">
                   <div>
-                    <p className="font-medium">Number of Carpets</p>
+                    <p className="font-medium text-sm sm:text-base">Number of Carpets</p>
                     <p className="text-xs text-muted-foreground">Optional extra service</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8 rounded-full"
+                      className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                       onClick={() => handleCarpetChange(-1)}
                       disabled={formData.carpetCount === 0}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-12 text-center font-semibold text-lg">{formData.carpetCount}</span>
+                    <span className="w-12 text-center font-semibold text-lg sm:text-xl">{formData.carpetCount}</span>
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8 rounded-full"
+                      className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                       onClick={() => handleCarpetChange(1)}
                     >
                       <Plus className="h-4 w-4" />
@@ -568,29 +704,29 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
               {/* Balcony */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-sm sm:text-base">
                   <Home className="h-4 w-4" /> Balcony Cleaning (Extra)
                 </Label>
-                <div className="flex items-center justify-between p-4 rounded-xl border-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border-2">
                   <div>
-                    <p className="font-medium">Number of Balconies</p>
+                    <p className="font-medium text-sm sm:text-base">Number of Balconies</p>
                     <p className="text-xs text-muted-foreground">Optional extra service</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8 rounded-full"
+                      className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                       onClick={() => handleBalconyChange(-1)}
                       disabled={formData.balconyCount === 0}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-12 text-center font-semibold text-lg">{formData.balconyCount}</span>
+                    <span className="w-12 text-center font-semibold text-lg sm:text-xl">{formData.balconyCount}</span>
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8 rounded-full"
+                      className="h-10 w-10 sm:h-12 sm:w-12 rounded-full min-h-[44px] min-w-[44px]"
                       onClick={() => handleBalconyChange(1)}
                     >
                       <Plus className="h-4 w-4" />
@@ -601,9 +737,9 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
             </div>
 
             {/* Additional Services */}
-            <div className="space-y-2 mt-6">
-              <Label className="text-base font-semibold">Other Services</Label>
-              <p className="text-sm text-muted-foreground mb-3">Select any additional services you need</p>
+            <div className="space-y-2 mt-4 sm:mt-6">
+              <Label className="text-sm sm:text-base font-semibold">Other Services</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3">Select any additional services you need</p>
 
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
@@ -618,16 +754,16 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                     key={key}
                     onClick={() => handleExtrasToggle(key)}
                     className={cn(
-                      "p-4 rounded-xl border-2 transition-all text-left",
+                      "p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                       formData.extras[key]
                         ? "border-primary bg-primary/5"
                         : "border-muted hover:border-primary/50"
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className={cn(
-                          "h-8 w-8 rounded-lg flex items-center justify-center transition-colors",
+                          "h-8 w-8 rounded-lg flex items-center justify-center transition-colors shrink-0",
                           formData.extras[key] ? "bg-primary text-primary-foreground" : "bg-muted"
                         )}>
                           {formData.extras[key] ? (
@@ -636,8 +772,8 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                             <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
                           )}
                         </div>
-                        <div>
-                          <p className="font-medium">{label}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm sm:text-base">{label}</p>
                           <p className="text-xs text-muted-foreground">+£{price}</p>
                         </div>
                       </div>
@@ -649,14 +785,14 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
             <div className="bg-muted/50 rounded-lg p-4 mt-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total</span>
-                <span className="text-2xl font-bold text-primary">£{totalPrice}</span>
+                <span className="font-medium text-sm sm:text-base">Total</span>
+                <span className="text-xl sm:text-2xl font-bold text-primary">£{totalPrice}</span>
               </div>
             </div>
 
             <Button
               variant="hero"
-              className="w-full mt-6"
+              className="w-full mt-4 sm:mt-6 min-h-[56px]"
               disabled={!canProceedToContact}
               onClick={() => setStep('contact')}
             >
@@ -668,29 +804,30 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
         {/* Step: Contact Info */}
         {step === 'contact' && (
-          <div className="space-y-4 animate-fade-in">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto">
             <div className="flex items-center gap-2">
-              <button onClick={goBack} className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <button onClick={goBack} className="p-2 sm:p-3 hover:bg-muted rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <ArrowLeft className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-semibold">Contact Information</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">Contact Information</h2>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="flex items-center gap-1">
-                  <User className="h-3 w-3" /> Full Name *
+                <Label htmlFor="name" className="flex items-center gap-1 text-sm sm:text-base">
+                  <User className="h-3 w-3 sm:h-4 sm:w-4" /> Full Name *
                 </Label>
                 <Input
                   id="name"
                   placeholder="John Smith"
                   value={formData.customerName}
                   onChange={e => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
+                  className="h-12 sm:h-14 text-base"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="flex items-center gap-1">
-                  <Mail className="h-3 w-3" /> Email *
+                <Label htmlFor="email" className="flex items-center gap-1 text-sm sm:text-base">
+                  <Mail className="h-3 w-3 sm:h-4 sm:w-4" /> Email *
                 </Label>
                 <Input
                   id="email"
@@ -698,12 +835,13 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                   placeholder="john@example.com"
                   value={formData.customerEmail}
                   onChange={e => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
+                  className="h-12 sm:h-14 text-base"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone" className="flex items-center gap-1">
-                <Phone className="h-3 w-3" /> Phone Number *
+              <Label htmlFor="phone" className="flex items-center gap-1 text-sm sm:text-base">
+                <Phone className="h-3 w-3 sm:h-4 sm:w-4" /> Phone Number *
               </Label>
               <Input
                 id="phone"
@@ -711,22 +849,24 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 placeholder="+44 20 1234 5678"
                 value={formData.customerPhone}
                 onChange={e => setFormData(prev => ({ ...prev, customerPhone: e.target.value }))}
+                className="h-12 sm:h-14 text-base"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="notes">Special Instructions (Optional)</Label>
+              <Label htmlFor="notes" className="text-sm sm:text-base">Special Instructions (Optional)</Label>
               <Textarea
                 id="notes"
                 placeholder="Access codes, pets, focus areas..."
                 value={formData.notes}
                 onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                 rows={3}
+                className="text-base"
               />
             </div>
 
             <Button
               variant="hero"
-              className="w-full mt-6"
+              className="w-full mt-4 sm:mt-6 min-h-[56px]"
               disabled={!canProceedToPayment}
               onClick={() => setStep('payment')}
             >
@@ -738,18 +878,18 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
         {/* Step: Payment */}
         {step === 'payment' && (
-          <div className="space-y-4 animate-fade-in">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto">
             <div className="flex items-center gap-2">
-              <button onClick={goBack} className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <button onClick={goBack} className="p-2 sm:p-3 hover:bg-muted rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <ArrowLeft className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-semibold">Payment Options</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">Payment Options</h2>
             </div>
 
             <div className="bg-muted/50 rounded-lg p-4 mb-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total Amount</span>
-                <span className="text-2xl font-bold text-primary">£{totalPrice}</span>
+                <span className="font-medium text-sm sm:text-base">Total Amount</span>
+                <span className="text-xl sm:text-2xl font-bold text-primary">£{totalPrice}</span>
               </div>
             </div>
 
@@ -757,21 +897,21 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
               <button
                 onClick={() => setFormData(prev => ({ ...prev, paymentType: 'deposit-cash' }))}
                 className={cn(
-                  "w-full p-4 rounded-xl border-2 transition-all text-left",
+                  "w-full p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                   formData.paymentType === 'deposit-cash'
                     ? "border-primary bg-primary/5"
                     : "border-muted hover:border-primary/50"
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">Deposit + Cash on Arrival</p>
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm sm:text-base">Deposit + Cash on Arrival</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Pay {formData.depositPercentage}% deposit now, rest in cash
                     </p>
                   </div>
                   <div className={cn(
-                    "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                    "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0",
                     formData.paymentType === 'deposit-cash' ? "border-primary bg-primary" : "border-muted"
                   )}>
                     {formData.paymentType === 'deposit-cash' && (
@@ -781,11 +921,11 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 </div>
                 {formData.paymentType === 'deposit-cash' && (
                   <div className="mt-3 pt-3 border-t space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span>Deposit ({formData.depositPercentage}%):</span>
                       <span className="font-medium">£{depositAmount}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span>Cash on arrival:</span>
                       <span className="font-medium">£{totalPrice - depositAmount}</span>
                     </div>
@@ -800,7 +940,7 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                           ...prev, 
                           depositPercentage: Math.max(10, Math.min(90, parseInt(e.target.value) || 30))
                         }))}
-                        className="w-20 h-8"
+                        className="w-20 h-10 sm:h-12 text-base"
                       />
                     </div>
                   </div>
@@ -810,21 +950,21 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
               <button
                 onClick={() => setFormData(prev => ({ ...prev, paymentType: 'full' }))}
                 className={cn(
-                  "w-full p-4 rounded-xl border-2 transition-all text-left",
+                  "w-full p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                   formData.paymentType === 'full'
                     ? "border-primary bg-primary/5"
                     : "border-muted hover:border-primary/50"
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">Full Payment</p>
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm sm:text-base">Full Payment</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Pay the full amount now
                     </p>
                   </div>
                   <div className={cn(
-                    "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                    "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0",
                     formData.paymentType === 'full' ? "border-primary bg-primary" : "border-muted"
                   )}>
                     {formData.paymentType === 'full' && (
@@ -837,7 +977,7 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
             <Button
               variant="hero"
-              className="w-full mt-6"
+              className="w-full mt-4 sm:mt-6 min-h-[56px]"
               disabled={!canProceedToConfirm}
               onClick={() => setStep('confirm')}
             >
@@ -849,40 +989,40 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
         {/* Step: Confirmation */}
         {step === 'confirm' && (
-          <div className="space-y-4 animate-fade-in">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto">
             <div className="flex items-center gap-2">
-              <button onClick={goBack} className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <button onClick={goBack} className="p-2 sm:p-3 hover:bg-muted rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <ArrowLeft className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-semibold">Confirm Booking</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">Confirm Booking</h2>
             </div>
 
-            <div className="bg-muted/50 rounded-xl p-4 space-y-4">
+            <div className="bg-muted/50 rounded-xl p-4 sm:p-6 space-y-4">
               {/* Location & Schedule */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Location</p>
-                <p className="font-medium">{formData.postcode}, {formData.city}</p>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground">Location</p>
+                <p className="font-medium text-sm sm:text-base">{formData.postcode}, {formData.city}</p>
               </div>
 
-              <div className="border-t pt-3 grid grid-cols-3 gap-3 text-sm">
+              <div className="border-t pt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
                 <div>
-                  <span className="text-muted-foreground">Date</span>
+                  <span className="text-muted-foreground block mb-1">Date</span>
                   <p className="font-medium">{formData.date && format(formData.date, 'MMM d, yyyy')}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Time</span>
+                  <span className="text-muted-foreground block mb-1">Time</span>
                   <p className="font-medium">{formData.time}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Cleaner</span>
+                  <span className="text-muted-foreground block mb-1">Cleaner</span>
                   <p className="font-medium">{getStaffById(formData.staffId)?.name?.split(' ')[0] || 'TBD'}</p>
                 </div>
               </div>
 
               {/* Property Details */}
               <div className="border-t pt-3 space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Property Details</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground">Property Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
                     <span>Type:</span>
                     <span className="font-medium capitalize">{formData.propertyType}</span>
@@ -938,8 +1078,8 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
               {/* Payment Details */}
               <div className="border-t pt-3 space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Payment</p>
-                <div className="text-sm">
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground">Payment</p>
+                <div className="text-xs sm:text-sm">
                   {formData.paymentType === 'deposit-cash' ? (
                     <div className="space-y-1">
                       <div className="flex justify-between">
@@ -962,13 +1102,13 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
               <div className="border-t pt-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Total</span>
-                  <span className="text-3xl font-bold text-primary">£{totalPrice}</span>
+                  <span className="font-medium text-sm sm:text-base">Total</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-primary">£{totalPrice}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-muted/30 rounded-xl p-4 space-y-2 text-sm">
+            <div className="bg-muted/30 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
               <p><strong>Name:</strong> {formData.customerName}</p>
               <p><strong>Email:</strong> {formData.customerEmail}</p>
               <p><strong>Phone:</strong> {formData.customerPhone}</p>
@@ -978,7 +1118,7 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
             <Button
               variant="hero"
               size="lg"
-              className="w-full"
+              className="w-full min-h-[56px]"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
@@ -989,13 +1129,14 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
                 </>
               ) : (
                 <>
-                  Confirm Booking · {formData.paymentType === 'deposit-cash' ? `£${depositAmount} deposit` : `£${totalPrice}`}
+                  <span className="hidden sm:inline">Confirm Booking · </span>
+                  {formData.paymentType === 'deposit-cash' ? `£${depositAmount} deposit` : `£${totalPrice}`}
                   <CheckCircle2 className="h-4 w-4 ml-2" />
                 </>
               )}
             </Button>
             
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-xs text-center text-muted-foreground px-4">
               By confirming, you agree to our terms of service
             </p>
           </div>
@@ -1003,16 +1144,16 @@ const BookingWidget = ({ onComplete }: BookingWidgetProps) => {
 
         {/* Step: Success */}
         {step === 'success' && (
-          <div className="text-center py-8 space-y-4 animate-fade-in">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="h-10 w-10 text-green-600" />
+          <div className="text-center py-8 space-y-4 sm:space-y-6 animate-fade-in max-w-5xl mx-auto px-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
             </div>
-            <h2 className="text-2xl font-display font-bold">Booking Confirmed!</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-xl sm:text-2xl font-display font-bold">Booking Confirmed!</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Your cleaning is scheduled for<br />
               <strong>{formData.date && format(formData.date, 'EEEE, MMMM d, yyyy')}</strong> at <strong>{formData.time}</strong>
             </p>
-            <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
+            <div className="bg-muted/50 rounded-lg p-4 sm:p-6 text-xs sm:text-sm space-y-2 text-left max-w-2xl mx-auto">
               <p><strong>Confirmation ID:</strong> {bookingId}</p>
               <p><strong>Total:</strong> £{totalPrice}</p>
               {formData.paymentType === 'deposit-cash' && (

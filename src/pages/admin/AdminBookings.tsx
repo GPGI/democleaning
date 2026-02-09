@@ -91,94 +91,98 @@ const AdminBookings = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Staff</TableHead>
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBookings.length > 0 ? (
-                  filteredBookings.map((booking) => {
-                    const service = getServiceById(booking.serviceId);
-                    const staffMember = getStaffById(booking.staffId);
-                    const bookingDate = parseISO(booking.date);
-
-                    return (
-                      <TableRow key={booking.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{booking.customerName}</p>
-                            <p className="text-sm text-muted-foreground">{booking.customerEmail}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{service?.name}</TableCell>
-                        <TableCell>{staffMember?.name}</TableCell>
-                        <TableCell>
-                          <div>
-                            <p>{format(bookingDate, 'MMM d, yyyy')}</p>
-                            <p className="text-sm text-muted-foreground">{booking.time}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={booking.status as any}>{booking.status}</Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">${booking.totalPrice}</TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {booking.status === 'pending' && (
-                                <DropdownMenuItem
-                                  onClick={() => handleStatusChange(booking.id, 'confirmed')}
-                                >
-                                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                                  Confirm
-                                </DropdownMenuItem>
-                              )}
-                              {booking.status === 'confirmed' && (
-                                <DropdownMenuItem
-                                  onClick={() => handleStatusChange(booking.id, 'completed')}
-                                >
-                                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                                  Mark Complete
-                                </DropdownMenuItem>
-                              )}
-                              {booking.status !== 'cancelled' && booking.status !== 'completed' && (
-                                <DropdownMenuItem
-                                  onClick={() => handleStatusChange(booking.id, 'cancelled')}
-                                  className="text-destructive"
-                                >
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Cancel
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
+          <div className="rounded-lg border overflow-x-auto">
+            <div className="min-w-[800px]">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      No bookings found
-                    </TableCell>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Service</TableHead>
+                    <TableHead>Staff</TableHead>
+                    <TableHead>Date & Time</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredBookings.length > 0 ? (
+                    filteredBookings.map((booking) => {
+                      const service = getServiceById(booking.serviceId);
+                      const staffMember = getStaffById(booking.staffId);
+                      const bookingDate = parseISO(booking.date);
+
+                      return (
+                        <TableRow key={booking.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium text-sm sm:text-base">{booking.customerName}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">{booking.customerEmail}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm sm:text-base">{service?.name}</TableCell>
+                          <TableCell className="text-sm sm:text-base">{staffMember?.name}</TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="text-sm sm:text-base">{format(bookingDate, 'MMM d, yyyy')}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">{booking.time}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={booking.status as any} className="text-xs">{booking.status}</Badge>
+                          </TableCell>
+                          <TableCell className="font-medium text-sm sm:text-base">£{booking.totalPrice}</TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {booking.status === 'pending' && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleStatusChange(booking.id, 'confirmed')}
+                                    className="min-h-[44px]"
+                                  >
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    Confirm
+                                  </DropdownMenuItem>
+                                )}
+                                {booking.status === 'confirmed' && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleStatusChange(booking.id, 'completed')}
+                                    className="min-h-[44px]"
+                                  >
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    Mark Complete
+                                  </DropdownMenuItem>
+                                )}
+                                {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleStatusChange(booking.id, 'cancelled')}
+                                    className="text-destructive min-h-[44px]"
+                                  >
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Cancel
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground text-sm sm:text-base">
+                        No bookings found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
